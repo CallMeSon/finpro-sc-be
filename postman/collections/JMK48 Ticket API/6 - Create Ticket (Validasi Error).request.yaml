@@ -1,0 +1,35 @@
+$kind: http-request
+name: '6 - Create Ticket (Validasi Error)'
+method: POST
+url: '{{base_url}}/api/tickets'
+order: 6000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "emailPemesan": "test@example.com",
+      "kategoriTicket": "VIP",
+      "jumlahTicket": 2,
+      "lineupGroup": "Lineup Oslo (Fuad, Rehan, Mr Ironi)"
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status code adalah 400 (validasi gagal)", function () {
+          pm.response.to.have.status(400);
+      });
+
+      pm.test("Response memiliki success: false", function () {
+          const json = pm.response.json();
+          pm.expect(json.success).to.be.false;
+      });
+
+      pm.test("Pesan error validasi muncul", function () {
+          const json = pm.response.json();
+          pm.expect(json.error).to.be.an("array");
+          pm.expect(json.error[0]).to.include("Nama Wajib oey");
+      });

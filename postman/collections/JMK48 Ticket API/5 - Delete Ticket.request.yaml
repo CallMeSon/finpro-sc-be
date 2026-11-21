@@ -1,0 +1,26 @@
+$kind: http-request
+name: '5 - Delete Ticket'
+method: DELETE
+url: '{{base_url}}/api/tickets/{{ticket_id}}'
+order: 5000
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status code adalah 200", function () {
+          pm.response.to.have.status(200);
+      });
+
+      pm.test("Response memiliki success: true", function () {
+          const json = pm.response.json();
+          pm.expect(json.success).to.be.true;
+      });
+
+      pm.test("Message konfirmasi penghapusan", function () {
+          const json = pm.response.json();
+          pm.expect(json.message).to.eql("Ticket udah dihapus, bye bye");
+      });
+
+      // Bersihkan ticket_id setelah dihapus
+      pm.environment.unset("ticket_id");
+      console.log("ticket_id dihapus dari environment");

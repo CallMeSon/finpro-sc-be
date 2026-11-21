@@ -1,0 +1,42 @@
+$kind: http-request
+name: '4 - Update Ticket'
+method: PUT
+url: '{{base_url}}/api/tickets/{{ticket_id}}'
+order: 4000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "statusPembayaran": "dana masuk boskyuh",
+      "jumlahTicket": 3
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status code adalah 200", function () {
+          pm.response.to.have.status(200);
+      });
+
+      pm.test("Response memiliki success: true", function () {
+          const json = pm.response.json();
+          pm.expect(json.success).to.be.true;
+      });
+
+      pm.test("Message berisi konfirmasi update", function () {
+          const json = pm.response.json();
+          pm.expect(json.message).to.eql("Oke, data ticket udah diupdate");
+      });
+
+      pm.test("statusPembayaran berhasil diupdate", function () {
+          const json = pm.response.json();
+          pm.expect(json.data.statusPembayaran).to.eql("dana masuk boskyuh");
+      });
+
+      pm.test("jumlahTicket berhasil diupdate menjadi 3", function () {
+          const json = pm.response.json();
+          pm.expect(json.data.jumlahTicket).to.eql(3);
+      });

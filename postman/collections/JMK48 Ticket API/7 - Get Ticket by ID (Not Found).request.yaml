@@ -1,0 +1,22 @@
+$kind: http-request
+name: '7 - Get Ticket by ID (Not Found)'
+method: GET
+url: '{{base_url}}/api/tickets/000000000000000000000000'
+order: 7000
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status code adalah 404 (tidak ditemukan)", function () {
+          pm.response.to.have.status(404);
+      });
+
+      pm.test("Response memiliki success: false", function () {
+          const json = pm.response.json();
+          pm.expect(json.success).to.be.false;
+      });
+
+      pm.test("Pesan error 404 muncul", function () {
+          const json = pm.response.json();
+          pm.expect(json.message).to.eql("Ticket nya gaada bos, cek lagi ID nya");
+      });

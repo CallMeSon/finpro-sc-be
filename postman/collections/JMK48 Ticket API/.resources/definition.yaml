@@ -1,0 +1,6 @@
+$kind: collection
+name: 'JMK48 Ticket API'
+description: 'Collection untuk testing semua endpoint API pemesanan ticket konser JMK48'
+variables:
+  - key: base_url
+    value: 'http://localhost:5000'

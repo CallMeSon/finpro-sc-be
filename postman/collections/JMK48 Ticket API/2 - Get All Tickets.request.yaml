@@ -1,0 +1,33 @@
+$kind: http-request
+name: '2 - Get All Tickets'
+method: GET
+url: '{{base_url}}/api/tickets'
+order: 2000
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status code adalah 200", function () {
+          pm.response.to.have.status(200);
+      });
+
+      pm.test("Response memiliki success: true", function () {
+          const json = pm.response.json();
+          pm.expect(json.success).to.be.true;
+      });
+
+      pm.test("Response memiliki field 'count'", function () {
+          const json = pm.response.json();
+          pm.expect(json).to.have.property("count");
+          pm.expect(json.count).to.be.a("number");
+      });
+
+      pm.test("Response memiliki array 'data'", function () {
+          const json = pm.response.json();
+          pm.expect(json.data).to.be.an("array");
+      });
+
+      pm.test("Jumlah data sesuai dengan count", function () {
+          const json = pm.response.json();
+          pm.expect(json.data.length).to.eql(json.count);
+      });

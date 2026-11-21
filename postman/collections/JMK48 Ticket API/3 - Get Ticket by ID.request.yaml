@@ -1,0 +1,34 @@
+$kind: http-request
+name: '3 - Get Ticket by ID'
+method: GET
+url: '{{base_url}}/api/tickets/{{ticket_id}}'
+order: 3000
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status code adalah 200", function () {
+          pm.response.to.have.status(200);
+      });
+
+      pm.test("Response memiliki success: true", function () {
+          const json = pm.response.json();
+          pm.expect(json.success).to.be.true;
+      });
+
+      pm.test("Data ticket ditemukan", function () {
+          const json = pm.response.json();
+          pm.expect(json.data).to.be.an("object");
+          pm.expect(json.data._id).to.eql(pm.environment.get("ticket_id"));
+      });
+
+      pm.test("Data ticket memiliki field yang lengkap", function () {
+          const json = pm.response.json();
+          pm.expect(json.data).to.have.property("namaPemesan");
+          pm.expect(json.data).to.have.property("emailPemesan");
+          pm.expect(json.data).to.have.property("kategoriTicket");
+          pm.expect(json.data).to.have.property("jumlahTicket");
+          pm.expect(json.data).to.have.property("totalHarga");
+          pm.expect(json.data).to.have.property("statusPembayaran");
+          pm.expect(json.data).to.have.property("lineupGroup");
+      });

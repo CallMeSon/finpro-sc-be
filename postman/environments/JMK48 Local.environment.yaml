@@ -1,0 +1,10 @@
+name: 'JMK48 Local'
+values:
+  - key: base_url
+    value: 'http://localhost:5000'
+    enabled: true
+    type: default
+  - key: ticket_id
+    value: ''
+    enabled: true
+    type: default

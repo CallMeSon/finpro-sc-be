@@ -1,0 +1,58 @@
+$kind: http-request
+name: '1 - Create Ticket'
+method: POST
+url: '{{base_url}}/api/tickets'
+order: 1000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "namaPemesan": "Gerson Sebastian",
+      "emailPemesan": "gerson@example.com",
+      "kategoriTicket": "VIP",
+      "jumlahTicket": 2,
+      "lineupGroup": "Lineup Oslo (Fuad, Rehan, Mr Ironi)"
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status code adalah 201", function () {
+          pm.response.to.have.status(201);
+      });
+
+      pm.test("Response memiliki success: true", function () {
+          const json = pm.response.json();
+          pm.expect(json.success).to.be.true;
+      });
+
+      pm.test("Message berisi 'woke, dana masuk boskyuh'", function () {
+          const json = pm.response.json();
+          pm.expect(json.message).to.eql("woke, dana masuk boskyuh");
+      });
+
+      pm.test("Data ticket tersimpan dengan benar", function () {
+          const json = pm.response.json();
+          pm.expect(json.data).to.have.property("_id");
+          pm.expect(json.data.namaPemesan).to.eql("Gerson Sebastian");
+          pm.expect(json.data.emailPemesan).to.eql("gerson@example.com");
+          pm.expect(json.data.kategoriTicket).to.eql("VIP");
+          pm.expect(json.data.jumlahTicket).to.eql(2);
+          pm.expect(json.data.totalHarga).to.eql(1800000);
+          pm.expect(json.data.statusPembayaran).to.eql("bayar dulu mpruy");
+      });
+
+      pm.test("totalHarga dihitung otomatis oleh server (VIP x2 = 1800000)", function () {
+          const json = pm.response.json();
+          pm.expect(json.data.totalHarga).to.eql(1800000);
+      });
+
+      // Simpan ID ticket untuk dipakai di request berikutnya
+      if (pm.response.code === 201) {
+          const json = pm.response.json();
+          pm.environment.set("ticket_id", json.data._id);
+          console.log("ticket_id tersimpan:", json.data._id);
+      }
